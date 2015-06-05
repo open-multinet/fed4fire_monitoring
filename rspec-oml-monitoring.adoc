@@ -1,0 +1,344 @@
+RSpec Extension for Configuring Experimenter Infrastructure OML Monitoring
+=========================================================================
+TODO_ADD_Authors
+v0.1, June 2015: First draft
+:language: xml
+
+
+[NOTE]
+====================================================
+.About this document
+This is a work in progress
+====================================================
+
+== Namespace
+
+To extend the RSpec, a separate namespace for the new XML elements is needed.
+The chosen namespace is: 
+
+.Namespace
+[source]
+----------------
+http://fed4fire.eu/schemas/rspec/ext/monitoring/1
+----------------
+
+This document will be put online at the URL of the used XML namespace.
+
+The schema xsd files are in the same dir, and linked from this document.
+The XSD files are:
+
+* link:advertisement.xsd[Advertisement RSpec XSD]
+* link:request.xsd[Request RSpec XSD]
+* link:manifest.xsd[Manifest RSpec XSD]
+
+.Example usage
+[source]
+----------------
+<rspec xmlns="http://www.geni.net/resources/rspec/3" 
+       type="request"
+       xmlns:f4fmon="http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.geni.net/resources/rspec/3 
+            http://www.geni.net/resources/rspec/3/request.xsd 
+            http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1 
+            http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1/request.xsd">
+----------------
+
+== Advertisement RSpec
+
+The advertisement RSpec is extend with the following information:
+
+* The fact that OML monitoring can be enabled.
+* The available metrics that can be monitored.
+* Optionally, a URL where more info can be found (aimed at humans).
+
+This information is added by using the +monitoring+ element one or more times. This element can be added to: 
+
+- A node: To specify which monitoring a user can request from a specific node. The possible node specific metrics should be listed here.
+- A link: To specify which monitoring a user can request from a specific link. The possible link specific metrics should be listed here.
+- The root +rspec+ element. General, non-node or link specific, metrics can be listed here.
+
+The +monitoring+ element has 2 attributes:
+
+- A mandatory +supported+ attribute, which should be set to "true" if the node supports monitoring. Any other value means the node does not support monitoring.
+- An optional +type+ attribute. This should be set to the type of the monitoring server, for example "zabbix".
+- An optional +doc+ attribute. This contains a link to human readable documentation about the monitored metrics.
+
+The +monitoring+ element has zero, or one or more child +metric+ elements. If there are no child +metric+ elements, this means that the metrics are not specified here (they might be in the doc or should be hard coded), or that they cannot be monitored separately. If there are one or more +metric+ child elements, these are a list of all possible metrics, that the user can choose from. It is advisable that every advertisement contains a list of metrics.
+
+Each of the metric elements has the following attributes:
+
+- A mandatory +id+ attribute. This contains at least 2 letters, and maximum 50. It only contains lower and upper case letters, numbers, underscore and dash, and only starts with an underscore (see the XSD for a formal description of these limitations). Both clients and server should treat this as being case insensitive, but avoid changing the case. This means: a client should use an +id+ with exactly the same case as in the advertisement. A server should in requests ignore the case of the +id+ field, and thus accept +id+ with a different case. This also means that it is not allowed to have 2 different metrics with an +id+ where only the case differs.
+- An optional +description+ attribute, which is a short human readable description of the attribute. For longer descriptions, see the +doc+ attribute of the +monitoring+ element.
+- An optional +unit+ attribute. This is the unit of the metric. It is optional because it is in some cases obvious (for example for a metric named 'logged_in_user_count'), but in most cases it is highly recommended to specify the unit (for example in the case of 'free_disk_space').
+- An optional +type+ attribute. *TODO: I do not know what this is needed for*.
+
+[WARNING]
+====================================================
+.Problem with initially proposed RSpec's
+In the original proposal of both David and Brecht, the list of metrics uses custom element names. For example:
+
++<fed4fire:procnum name="Number of processes" type="node" unit="proc"/>+
+
+This is possible, but it's better to avoid this, because there is a drawback related to xsd for this.
+The drawback is that if you want to verify an RSpec that uses this, you need a general XSD for this extension, 
+AND an XSD that defines all the custom elements for the specific advertisement RSpec.
+This makes everything a lot more complex than it needs to be.
+
+A simple way to avoid this, is not to use custom element names. The example would in this way become:
+
++<fed4fire:metric id="procnum" description="Number of processes" type="node" unit="proc"/>+
+
+If this form is used, it is possible to use one simple general XSD for this extension.
+
+====================================================
+
+.Example Bonfire Advertisement RSpec
+[source]
+----------------
+<node
+   xmlns:fed4fire="http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"
+   component_id="urn:publicid:IDN+sfa.bonfire.eu+node+locations%2Ffr-inria%2Fhosts%2Fbonfire-blade-1"
+   component_manager_id="urn:publicid:IDN+sfa.bonfire.eu+authority+am"
+   component_name="bonfire-blade-1">
+      <occi:cpu_model>Intel_Xeon_CPU_E5-2620_0_@_2.00GHz</occi:cpu_model>
+      <occi:cpu_smt_size>24</occi:cpu_smt_size>
+      <occi:cpu_smp_size>2</occi:cpu_smp_size>
+      <occi:cpu_ht_enabled>true</occi:cpu_ht_enabled>
+      <occi:memory_total_available>66137284</occi:memory_total_available>
+      <occi:net_bandwidth>2*1Gb</occi:net_bandwidth>
+      <occi:cluster>pe-c6220</occi:cluster>
+      <occi:allocation_blocs>96</occi:allocation_blocs>
+      <occi:name>bonfire-blade-1</occi:name>
+      <fed4fire:monitoring supported="true">
+         <fed4fire:metric id="procnum" description="Number of processes" type="node" unit="proc"/>
+         <fed4fire:metric id="cpuload" description="Processor load" type="node" unit="%"/>
+         <fed4fire:metric id="cpuutil" description="CPU user time (avg1)" type="node" unit="%"/>
+         <fed4fire:metric id="memfree" description="Free memory" type="node" unit="MB"/>
+         <fed4fire:metric id="memtotal" description="Total memory" type="node" unit="MB"/>
+         <fed4fire:metric id="swapfree" descriptimtn="Free swap space" type="node" unit="B"/>
+         <fed4fire:metric id="runningvm" description="Number of VMs running" type="node" unit="Vm"/>
+         <fed4fire:metric id="co2g" description="CO2 generation per 30s" type="node" unit="g"/>
+         <fed4fire:metric id="conswh" description="Aggregate energy usage" type="node" unit="Wh"/>
+         <fed4fire:metric id="consva" description="Apparent power" type="node" unit="VA"/>
+         <fed4fire:metric id="consw" description="Real power" type="node" unit="W"/>
+         <fed4fire:metric id="freespacesrv" description="Free space on /srv" type="node" unit="B"/>
+         <fed4fire:metric id="Availability" description="Availability" type="node" />
+         <fed4fire:metric id="IOPS" description="Disk IOPS" type="node" />
+         <fed4fire:metric id="cpuUtilization" description="CPU utilization" type="node" unit="%"/>
+         <fed4fire:metric id="PowerConsumption" description="Power consumption" type="node" unit="W"/>
+      </fed4fire:monitoring>
+      <occi:location name="fr-inria"/>
+</node>
+----------------
+
+.Example Advertisement RSpec
+[source]
+----------------
+<?xml version="1.0" encoding="UTF-8"?>
+<rspec type="advertisement" xmlns="http://www.geni.net/resources/rspec/3"
+   xmlns:f4fmon="http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.geni.net/resources/rspec/3 i
+              http://www.geni.net/resources/rspec/3/request.xsd
+              http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1
+              http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1/advertisement.xsd">
+      <node exclusive="true"
+            component_id="urn:publicid:IDN+example.com+node+node1"
+            component_manager_id="urn:publicid:IDN+example.com+authority+am"
+            component_name="node1">
+         <sliver_type name="raw-pc">
+         </sliver_type>
+         <f4fmon:monitoring supported="true" 
+                            type="zabbix" 
+                            doc="http://example.com/f4f_monitoring_metrics.html">
+            <f4fmon:metric id="cpu_load" description="CPU usage" unit="%"/>
+            <f4fmon:metric id="free_ram" description="Amount of free memory" unit="byte"/>
+         </f4fmon:monitoring>
+      </node>
+      <f4fmon:monitoring supported="true" 
+                         type="zabbix"> 
+           <f4fmon:metric id="total_switch_bw" description="Total Testbed Switch Bandwidth" unit="bps"/>
+           <f4fmon:metric id="free_resources" description="Total Number of Free Testbed Resources" unit="count"/>
+      </f4fmon:monitoring>
+</rspec>
+----------------
+
+*TODO* Add example of how to advertise link BW monitoring 
+
+== Request RSpec
+
+The request RSpec is extend with the following information:
+
+* A switch to enable the monitoring of a specific resource (node or link). This includes information on where to send the monitoring data.
+* The server the OML server that the monitoring data has to be sent to.
+* A list of specific metrics to monitor.
+
+This information is added by using the +monitoring+ element one or more times. This element can be added to: 
+
+- A node: To specify the node the user wants to monitor. Node specific metrics can be added here.
+- A link: To specify the link the user wants to monitor. Link specific metrics can be added here.
+- The root +rspec+ element. General, non node or link specific, metrics can be added here.
+
+The +monitoring+ element has 2 attributes:
+
+- A mandatory +enabled+ attribute, which should be set to "true" to enable monitoring. Any other value will disable monitoring.
+- A mandatory +monitoring_endpoint+ attribute. This is an OML connection string, that is passed to OML to setup the connection. The typical format of this string is: +[tcp:]HOST[:PORT]+ 
+
+The +monitoring+ element has zero, or one or more child +metric+ elements. If there are no child +metric+ elements, this means that all metrics should be monitored. If there are one or more +metric+ child elements, only the specified metrics should be monitored.
+
+Each of the metric elements has the mandatory +id+ attribute, which is the same id as in the advertisement. The +description+, +unit+ and +type+ attribute may be added as well, but they have no meaning in a request and are ignored by the AM. They are allowed to make it easy for users to just cut-and-paste the monitoring element from the advertisement.
+
+*TODO* Add example of monitoring link BW and of monitoring global testbed metric.
+
+.Example Request RSpec
+[source]
+----------------
+<?xml version="1.0" encoding="UTF-8"?>
+<rspec type="request" xmlns="http://www.geni.net/resources/rspec/3"
+   xmlns:f4fmon="http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.geni.net/resources/rspec/3 i
+              http://www.geni.net/resources/rspec/3/request.xsd
+              http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1
+              http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1/request.xsd">
+      <node client_id="node0" exclusive="false" >
+         <sliver_type name="raw-pc">
+         </sliver_type>
+         <f4fmon:monitoring enabled="true" monitoring_endpoint="...OML connection string...">
+            <!-- no metric specified, so all metrics are requested -->
+         </f4fmon:monitoring>
+      </node>
+      <f4fmon:monitoring enabled="true" monitoring_endpoint="...OML connection string...">
+          <!-- specific metrics listed, so only these metrics are requested -->
+          <f4fmon:metric id="total_switch_bw"/>
+      </f4fmon:monitoring>
+</rspec>
+----------------
+
+.Example Bonfire Request RSpec
+[source]
+----------------
+<?xml version="1.0" encoding="UTF-8"?>
+<rspec
+type="request"
+xmlns="http://www.geni.net/resources/rspec/3"
+xmlns:fed4fire="http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.geni.net/resources/rspec/3
+http://www.geni.net/resources/rspec/3/request.xsd">
+   <node
+      client_id="node0"
+      exclusive="false"
+      component_manager_id="urn:publicid:IDN+sfa.bonfire.eu+authority+am" >
+         <sliver_type name="/locations/fr-inria/configurations/custom">
+         <cpu>0.25</cpu>
+         <memory>394</memory>
+         </sliver_type>
+         <occi:compute xmlns:occi="http://api.bonfire-
+         project.eu/doc/schemas/occi">
+         <occi:nic>
+         <occi:network href="/locations/fr-inria/networks/1"/>
+         </occi:nic>
+         <occi:disk>
+         <occi:storage href="/locations/fr-inria/storages/1392"/>
+         <occi:type>OS</occi:type>
+         <occi:target>hda</occi:target>
+         </occi:disk>
+         </occi:compute>
+         <fed4fire:monitoring value="true" monitoring_endpoint="tcp:172.18.242.55:3003">
+            <!-- specific metrics listed, so only these metrics are requested -->
+            <fed4fire:metric id="procnum" description="Number of processes" unit="proc" type="node" period="12"/>
+            <fed4fire:metric id="runningvm" type="node" />
+         </fed4fire:monitoring>
+   </node>
+</rspec>
+----------------
+
+
+== Manifest RSpec
+
+The manifest RSpec returned by the AM should copy the monitoring data from the request. Note that this is the desired behavior of an AM even if it does not know about the extension.
+
+*TODO*: It is also possible to add useful information, that the user should know about. Is there such information in this case?
+
+== Background
+
+=== Extending Geni v3 RSpec
+
+The RSpec's are XML documents, with as root element the RSpec element from the
++http://www.geni.net/resources/rspec/3+ namespace.
+The schema for this namespace can be found at http://www.geni.net/resources/rspec/3/
+
+Note that there are in fact 3 slightly different schema's:
+advertisement, request and manifest.
+Normally, an RSpec is not just a "well formed" XML document, it is a
+valid XML document, meaning it also conforms to the schema.
+
+If we want to extend the RSpec, the extended RSpec should be valid as well.
+Luckily, the RSpec namespace schema allows a lot of extensions, that
+is, it allows use to add non-default elements (and attributes) in a
+lot of places. These have to be in another namespace than the rspec
+namespace however.
+
+For example, if you look at the services and login part of the xsd at
+http://www.geni.net/resources/rspec/3/manifest-common.xsd you will see
+that these both have:
++<xs:group ref="rspec:AnyExtension"/>+
+and
++<xs:attributeGroup ref="rspec:AnyExtension"/>+
+
+This refers to http://www.geni.net/resources/rspec/3/any-extension-schema.xsd
+which basically allows you to extend these elements with attributes and
+elements. Note that both element and attribute extensions are defined
+with +namespace="##other"+ which means that you need to use a separate
+namespace (which makes a lot of sense if you think about it).
+
+The parts of the RSpec where additional XML can be added are:
+
+* Directly under the root +<rspec>+ element
+* In each +<node>+ element
+* In each +<link>+ element
+* In each +<services>+ element
+
+You can also add new attributes to all of these elements, but only if these attributes are in a new namespace. 
+
+Note that you do not need to register your rspec extension anywhere. 
+You just use it, and if both clients and servers understand it, that's all that's required.
+
+In case a server or client doesn't know an extension, there is a default behavior: They should ignore them,
+and not fail on them. By doing this, the AM's and clients are as
+flexible as possible, and most things will work fine, even if an AM or
+client does not know an extension. More info here:
+http://fed4fire-testbeds.ilabt.iminds.be/asciidoc/rspec.html#RSpecExtensions
+
+=== XML namespaces
+
+For a quick reminder about XML namespaces, http://www.w3schools.com/xml/xml_namespaces.asp+ is a good start.
+
+Very quickly, there are 3 things to remember:
+
+* A namespace has a unique identifier, which is almost always a URL (by convention. This is not actually in the XML standard, but for simplicity, it can be considered to be in it.).
+* You can set the default namespace of an element and all child elements, by using the +xmlns+ attribute. Example: +<rspec xmlns="http://www.geni.net/resources/rspec/3">+
+* You can also bind the namespace to an alias, by using the attribute: +xmlns:alias>+.
+In that element, and all child elements, you can then prefix your element and attribute names with this alias. Example: +<rspec ... xmlns:fed4fire="http://flsmonitoring.fed4fire.eu/schemas/fed4fire">+
+
+Note: It is not a requirement that the URL that
+identifies the RSpec namespace points to the xsd files (in fact, the namespace identifier is
+even not required to be a URL). You can point to the location of the
+xsd file using the "xsi:schemaLocation" attribute, but it is not a
+requirement of a valid XML or RSpec to do that.
+
+
+=== XSD
+
+[quote,'http://en.wikipedia.org/wiki/XML_Schema_%28W3C%29']
+_____________________________________________________________________
+XSD (XML Schema Definition), a recommendation of the World Wide Web Consortium (W3C), specifies how to formally describe the elements in an Extensible Markup Language (XML) document.
+_____________________________________________________________________
+
+The XSD basics needed to understand the Geni RSpec v3 are not extremely complicated. 
+You'll probably know more than 
+enough to get started with a basic tutorial like
+http://www.w3schools.com/schema/   (Note that despite what that page says, you don't need to know DTD  to begin the tutorial)
+

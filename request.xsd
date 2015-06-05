@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1">
+    <xs:element name="monitoring">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="metric" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="enabled" use="required" type="xs:boolean"/>
+            <xs:attribute name="monitoring_endpoint" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="metric">
+        <xs:complexType>
+            <xs:attribute name="id" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:minLength value="2"/>
+                        <xs:maxLength value="50"/>
+                        <xs:pattern value="[a-zA-Z][a-zA-Z0-9_-.]*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+
+            <!-- These are ignored in a request, but may be repeated here to allow easy copying from the advertisement. -->
+            <xs:attribute name="description" use="optional"/>
+            <xs:attribute name="unit" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
