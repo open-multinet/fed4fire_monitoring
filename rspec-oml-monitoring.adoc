@@ -1,6 +1,6 @@
 RSpec Extension for Configuring Experimenter Infrastructure OML Monitoring
 =========================================================================
-TODO_ADD_Authors
+*TODO* ADD_Authors
 v0.1, June 2015: First draft
 :language: xml
 
