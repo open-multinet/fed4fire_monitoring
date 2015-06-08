@@ -173,8 +173,9 @@ If this form is used, it is possible to use one simple general XSD for this exte
 
 The request RSpec is extended with the following information:
 
-* A switch to enable the monitoring of a specific resource (node or link). This includes information on where to send the monitoring data.
-* The server the OML server that the monitoring data has to be sent to.
+* A switch to enable the monitoring of a specific resource (node or link). 
+* The monitoring endpoint of the server to which the monitoring data has to be sent to. This is a literal string specific for the monitoring info transport type.
+* The type of the monitoring info transport.
 * A list of specific metrics to monitor.
 
 This information is added by using the +monitoring+ element one or more times. This element can be added to: 
@@ -186,13 +187,13 @@ This information is added by using the +monitoring+ element one or more times. T
 The +monitoring+ element has 2 attributes:
 
 - A mandatory +enabled+ attribute, which should be set to "true" to enable monitoring. Any other value will disable monitoring.
-- A mandatory +monitoring_endpoint+ attribute. This is an OML connection string, that is passed to OML to setup the connection. The typical format of this string is: +[tcp:]HOST[:PORT]+ 
+- A mandatory +monitoring_endpoint+ attribute. This is a connection string, that is specific for the type of monitoring transport. E.g. for OML, the typical format of this string is: +[tcp:]HOST[:PORT]+ 
 
-The +monitoring+ element has zero, or one or more child +metric+ elements. If there are no child +metric+ elements, this means that all metrics should be monitored. If there are one or more +metric+ child elements, only the specified metrics should be monitored.
+The +monitoring+ element has zero, or one or more child +metric+ elements. If there are no child +metric+ elements, this means that all metrics should be monitored. If there are one or more +metric+ child elements, only the specified metrics should be monitored (but the testbed may send more metrics).
 
-Each of the metric elements has the mandatory +id+ attribute, which is the same id as in the advertisement. The +description+, +unit+ and +type+ attribute may be added as well, but they have no meaning in a request and are ignored by the AM. They are allowed to make it easy for users to just cut-and-paste the monitoring element from the advertisement.
+Each of the metric elements has the mandatory +id+ attribute, which is the same id as in the advertisement. The +description+ and +unit+ attribute may be added as well, but they have no meaning in a request and are ignored by the AM. They are allowed to make it easy for users to just cut-and-paste the monitoring element from the advertisement.
 
-*TODO* Add example of monitoring link BW and of monitoring global testbed metric.
+*TODO* Add example of monitoring link BW.
 
 .Example Request RSpec
 [source]
@@ -208,11 +209,11 @@ Each of the metric elements has the mandatory +id+ attribute, which is the same 
       <node client_id="node0" exclusive="false" >
          <sliver_type name="raw-pc">
          </sliver_type>
-         <f4fmon:monitoring enabled="true" monitoring_endpoint="...OML connection string...">
+         <f4fmon:monitoring enabled="true" monitoring_endpoint="...connection string..." type="...monitoring info transport type...">
             <!-- no metric specified, so all metrics are requested -->
          </f4fmon:monitoring>
       </node>
-      <f4fmon:monitoring enabled="true" monitoring_endpoint="...OML connection string...">
+      <f4fmon:monitoring enabled="true" monitoring_endpoint="...connection string..." type="...monitoring info transport type...">
           <!-- specific metrics listed, so only these metrics are requested -->
           <f4fmon:metric id="total_switch_bw"/>
       </f4fmon:monitoring>
@@ -226,7 +227,7 @@ Each of the metric elements has the mandatory +id+ attribute, which is the same 
 <rspec
 type="request"
 xmlns="http://www.geni.net/resources/rspec/3"
-xmlns:fed4fire="http://schemas.fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"
+xmlns:f4fmon="http://schemas.fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.geni.net/resources/rspec/3
 http://www.geni.net/resources/rspec/3/request.xsd">
@@ -249,11 +250,11 @@ http://www.geni.net/resources/rspec/3/request.xsd">
          <occi:target>hda</occi:target>
          </occi:disk>
          </occi:compute>
-         <fed4fire:monitoring value="true" monitoring_endpoint="tcp:172.18.242.55:3003">
+         <f4fmon:monitoring value="true" monitoring_endpoint="tcp:172.18.242.55:3003" type="oml">
             <!-- specific metrics listed, so only these metrics are requested -->
-            <fed4fire:metric id="procnum" description="Number of processes" unit="proc" type="node" period="12"/>
-            <fed4fire:metric id="runningvm" type="node" />
-         </fed4fire:monitoring>
+            <f4fmon:metric id="procnum" description="Number of processes" unit="proc" period="12"/>
+            <f4fmon:metric id="runningvm" type="node" />
+         </f4fmon:monitoring>
    </node>
 </rspec>
 ----------------
@@ -263,13 +264,13 @@ http://www.geni.net/resources/rspec/3/request.xsd">
 
 The manifest RSpec returned by the AM should copy the monitoring data from the request. Note that this is the desired behavior of an AM even if it does not know about the extension.
 
-*TODO*: It is also possible to add useful information, that the user should know about. Is there such information in this case?
+*TODO*: It is also possible to add useful information, that the user should know about. Is there such information in this case? Yes, you might add specific info about naming of the info you sent, but an example has to be worked out for this.
 
 == Background
 
 === Extending Geni v3 RSpec
 
-The RSpec's are XML documents, with as root element the RSpec element from the
+The RSpecs are XML documents, with as root element the RSpec element from the
 +http://www.geni.net/resources/rspec/3+ namespace.
 The schema for this namespace can be found at http://www.geni.net/resources/rspec/3/
 
