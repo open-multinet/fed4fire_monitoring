@@ -48,7 +48,7 @@ The XSD files are:
 
 The advertisement RSpec is extended with the following information:
 
-* The fact that (OML) monitoring can be enabled.
+* The fact that monitoring can be enabled.
 * The available metrics that can be monitored.
 * Optionally, a URL where more info can be found (aimed at humans).
 
@@ -61,7 +61,7 @@ This information is added by using the +monitoring+ element one or more times. T
 The +monitoring+ element has 2 attributes:
 
 - A mandatory +supported+ attribute, which should be set to "true" if the node supports monitoring. Any other value means the node does not support monitoring.
-- An optional +type+ attribute. This can be set to the type of the monitoring server, for example "zabbix".
+- An optional +type+ attribute. This can be set to the type of the monitoring server, for example "zabbix". *TODO (bvermeul): I think the type of monitoring like zabbix, nagios is more something for the documentation link, but what might be interesting is to put here the transport type (e.g. oml). We should then also allow multiple possibilities (possible with different metrics ?)*
 - An optional +doc+ attribute. This contains a link to human readable documentation about the monitored metrics.
 
 The +monitoring+ element has zero, or one or more child +metric+ elements. If there are no child +metric+ elements, this means that the metrics are hardcoded and that they should be documented in the referred doc. If there are one or more +metric+ child elements, these are a list of all possible metrics. The experimenter can choose from this list (in the request RSpec), but it might pe possible that the testbed returns more metrics. It is advisable that every advertisement contains a list of metrics.
