@@ -91,14 +91,14 @@ Each of the metric elements has the following attributes:
          <sliver_type name="raw-pc">
          </sliver_type>
          <f4fmon:monitoring supported="true" 
-                            type="zabbix" 
+                            type="oml" 
                             doc="http://example.com/f4f_monitoring_metrics.html">
             <f4fmon:metric id="cpu_load" description="CPU usage" unit="%"/>
             <f4fmon:metric id="free_ram" description="Amount of free memory" unit="B"/>
          </f4fmon:monitoring>
       </node>
       <f4fmon:monitoring supported="true" 
-                         type="zabbix"> 
+                         type="oml"> 
            <f4fmon:metric id="total_switch_bw" description="Total Testbed Switch Used Bandwidth" unit="bps"/>
            <f4fmon:metric id="free_resources" description="Total Number of Free Testbed Resources" unit="count"/>
       </f4fmon:monitoring>
