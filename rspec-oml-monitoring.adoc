@@ -19,7 +19,7 @@ The chosen namespace is:
 .Namespace
 [source]
 ----------------
-http://fed4fire.eu/schemas/rspec/ext/monitoring/1
+http://schemas.fed4fire.eu/schemas/rspec/ext/monitoring/1
 ----------------
 
 This document will be put online at the URL of the used XML namespace.
@@ -36,12 +36,12 @@ The XSD files are:
 ----------------
 <rspec xmlns="http://www.geni.net/resources/rspec/3" 
        type="request"
-       xmlns:f4fmon="http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1" 
+       xmlns:f4fmon="http://schemas.fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1" 
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.geni.net/resources/rspec/3 
             http://www.geni.net/resources/rspec/3/request.xsd 
-            http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1 
-            http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1/request.xsd">
+            http://schemas.fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1 
+            http://schemas.fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1/request.xsd">
 ----------------
 
 == Advertisement RSpec
@@ -97,7 +97,7 @@ If this form is used, it is possible to use one simple general XSD for this exte
 [source]
 ----------------
 <node
-   xmlns:fed4fire="http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"
+   xmlns:fed4fire="http://schemas.fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"
    component_id="urn:publicid:IDN+sfa.bonfire.eu+node+locations%2Ffr-inria%2Fhosts%2Fbonfire-blade-1"
    component_manager_id="urn:publicid:IDN+sfa.bonfire.eu+authority+am"
    component_name="bonfire-blade-1">
@@ -137,12 +137,12 @@ If this form is used, it is possible to use one simple general XSD for this exte
 ----------------
 <?xml version="1.0" encoding="UTF-8"?>
 <rspec type="advertisement" xmlns="http://www.geni.net/resources/rspec/3"
-   xmlns:f4fmon="http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"
+   xmlns:f4fmon="http://schemas.fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://www.geni.net/resources/rspec/3 i
               http://www.geni.net/resources/rspec/3/request.xsd
-              http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1
-              http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1/advertisement.xsd">
+              http://schemas.fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1
+              http://schemas.fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1/advertisement.xsd">
       <node exclusive="true"
             component_id="urn:publicid:IDN+example.com+node+node1"
             component_manager_id="urn:publicid:IDN+example.com+authority+am"
@@ -196,12 +196,12 @@ Each of the metric elements has the mandatory +id+ attribute, which is the same 
 ----------------
 <?xml version="1.0" encoding="UTF-8"?>
 <rspec type="request" xmlns="http://www.geni.net/resources/rspec/3"
-   xmlns:f4fmon="http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"
+   xmlns:f4fmon="http://schemas.fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://www.geni.net/resources/rspec/3 i
               http://www.geni.net/resources/rspec/3/request.xsd
-              http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1
-              http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1/request.xsd">
+              http://schemas.fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1
+              http://schemas.fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1/request.xsd">
       <node client_id="node0" exclusive="false" >
          <sliver_type name="raw-pc">
          </sliver_type>
@@ -223,7 +223,7 @@ Each of the metric elements has the mandatory +id+ attribute, which is the same 
 <rspec
 type="request"
 xmlns="http://www.geni.net/resources/rspec/3"
-xmlns:fed4fire="http://fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"
+xmlns:fed4fire="http://schemas.fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.geni.net/resources/rspec/3
 http://www.geni.net/resources/rspec/3/request.xsd">
@@ -321,7 +321,7 @@ Very quickly, there are 3 things to remember:
 * A namespace has a unique identifier, which is almost always a URL (by convention. This is not actually in the XML standard, but for simplicity, it can be considered to be in it.).
 * You can set the default namespace of an element and all child elements, by using the +xmlns+ attribute. Example: +<rspec xmlns="http://www.geni.net/resources/rspec/3">+
 * You can also bind the namespace to an alias, by using the attribute: +xmlns:alias>+.
-In that element, and all child elements, you can then prefix your element and attribute names with this alias. Example: +<rspec ... xmlns:fed4fire="http://flsmonitoring.fed4fire.eu/schemas/fed4fire">+
+In that element, and all child elements, you can then prefix your element and attribute names with this alias. Example: +<rspec ... xmlns:fed4fire="http://schemas.fed4fire.eu/schemas/fed4fire">+
 
 Note: It is not a requirement that the URL that
 identifies the RSpec namespace points to the xsd files (in fact, the namespace identifier is
