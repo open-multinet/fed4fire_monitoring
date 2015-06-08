@@ -71,7 +71,7 @@ Each of the metric elements has the following attributes:
 - A mandatory +id+ attribute. This contains at least 2 characters, and maximum 50. It only contains lower and upper case characters, numbers, underscore and dash, and only starts with a lower or upper case character (see the XSD for a formal description of these limitations). Both clients and server should treat this as being case insensitive, but avoid changing the case. This means: a client should use an +id+ with exactly the same case as in the advertisement. A server should in requests ignore the case of the +id+ field, and thus accept +id+ with a different case. This also means that it is not allowed to have 2 different metrics with an +id+ where only the case differs.
 - An optional +description+ attribute, which is a short human readable description of the attribute. For longer descriptions, see the +doc+ attribute of the +monitoring+ element.
 - An optional +unit+ attribute. This is the unit of the metric. It is optional because it is in some cases obvious (for example for a metric named 'logged_in_user_count'), but in most cases it is highly recommended to specify the unit (for example in the case of 'free_disk_space').
-- An optional +type+ attribute. *TODO: David introduced this to make it more simple to interpret it, but I think we can assume that upper level in the XML defines this already (this is node, link or general level/type)*. 
+- An optional +type+ attribute. *TODO: David introduced this to make it more simple to interpret it, but I think we can assume that upper level in the XML defines this already and I would remove it (this is node, link or general level/type)*. 
 
 .Example Advertisement RSpec
 [source]
@@ -274,7 +274,7 @@ The RSpecs are XML documents, with as root element the RSpec element from the
 +http://www.geni.net/resources/rspec/3+ namespace.
 The schema for this namespace can be found at http://www.geni.net/resources/rspec/3/
 
-Note that there are in fact 3 slightly different schema's:
+Note that there are in fact 3 slightly different schemas:
 advertisement, request and manifest.
 Normally, an RSpec is not just a "well formed" XML document, it is a
 valid XML document, meaning it also conforms to the schema.
@@ -282,7 +282,7 @@ valid XML document, meaning it also conforms to the schema.
 If we want to extend the RSpec, the extended RSpec should be valid as well.
 Luckily, the RSpec namespace schema allows a lot of extensions, that
 is, it allows use to add non-default elements (and attributes) in a
-lot of places. These have to be in another namespace than the rspec
+lot of places. These have to be in another namespace than the RSpec
 namespace however.
 
 For example, if you look at the services and login part of the xsd at
@@ -307,25 +307,25 @@ The parts of the RSpec where additional XML can be added are:
 
 You can also add new attributes to all of these elements, but only if these attributes are in a new namespace. 
 
-Note that you do not need to register your rspec extension anywhere. 
-You just use it, and if both clients and servers understand it, that's all that's required.
+Note that you do not need to register your RSpec extension anywhere. 
+You just use it, and if both clients and servers understand it, that's all that's required. This brings a lot of flexibility to add new functionality on the fly !
 
 In case a server or client doesn't know an extension, there is a default behavior: They should ignore them,
-and not fail on them. By doing this, the AM's and clients are as
+and not fail on them. By doing this, the AMs and clients are as
 flexible as possible, and most things will work fine, even if an AM or
 client does not know an extension. More info here:
 http://fed4fire-testbeds.ilabt.iminds.be/asciidoc/rspec.html#RSpecExtensions
 
 === XML namespaces
 
-For a quick reminder about XML namespaces, http://www.w3schools.com/xml/xml_namespaces.asp+ is a good start.
+For a quick reminder about XML namespaces, http://www.w3schools.com/xml/xml_namespaces.asp is a good start.
 
 Very quickly, there are 3 things to remember:
 
 * A namespace has a unique identifier, which is almost always a URL (by convention. This is not actually in the XML standard, but for simplicity, it can be considered to be in it.).
 * You can set the default namespace of an element and all child elements, by using the +xmlns+ attribute. Example: +<rspec xmlns="http://www.geni.net/resources/rspec/3">+
 * You can also bind the namespace to an alias, by using the attribute: +xmlns:alias>+.
-In that element, and all child elements, you can then prefix your element and attribute names with this alias. Example: +<rspec ... xmlns:fed4fire="http://schemas.fed4fire.eu/schemas/fed4fire">+
+In that element, and all child elements, you can then prefix your element and attribute names with this alias. That means that you can use e.g. +xmlns:fed4fire_monitoring="http://schemas.fed4fire.eu/schemas/rspec/ext/f4f_monitoring/1"+ in the examples above and then refer to +<fed4fire_monitoring:monitoring >+
 
 Note: It is not a requirement that the URL that
 identifies the RSpec namespace points to the xsd files (in fact, the namespace identifier is
